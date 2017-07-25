@@ -15,7 +15,7 @@ defmodule Noizu.MnesiaVersioning.Mixfile do
     [
       maintainers: ["noizu"],
       licenses: ["MIT"],
-      links: %{"GitHub" => "https://github.com/noizu/mnesia_versioning"}
+      links: %{"GitHub" => "https://github.com/noizu/MnesiaVersioning"}
     ]
   end
 

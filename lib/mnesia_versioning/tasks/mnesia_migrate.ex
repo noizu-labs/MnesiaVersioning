@@ -10,8 +10,8 @@ defmodule Mix.Tasks.MnesaVersioning.Migrate do
   use Noizu.MnesiaVersioning
   use Logger
 
-  @topology_provider(Application.get_env(:noizu_mnesia_versioning, :topology_provider, :required_setting))
-  @schema_provider(Application.get_env(:noizu_mnesia_versioning, :schema_provider, :required_setting))
+  @topology_provider(Application.get_env(Noizu.MnesiaVersioning, :topology_provider, :required_setting))
+  @schema_provider(Application.get_env(Noizu.MnesiaVersioning, :schema_provider, :required_setting))
 
   def main(args) do
     run(args)
