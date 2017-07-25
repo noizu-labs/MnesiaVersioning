@@ -4,5 +4,5 @@
 #-------------------------------------------------------------------------------
 
 defmodule Noizu.MnesiaVersioning.SchemaBehaviour do
-  @callback change_sets()
+  @callback change_sets() :: [Noizu.MnesiaVersioning.ChangeSet]
 end
