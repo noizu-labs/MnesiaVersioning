@@ -5,10 +5,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.16.2">
-    <title>Noizu.MnesiaVersioning.SchemaBehaviour – noizu_mnesia_versioning v0.1.1</title>
+    <title>Noizu.MnesiaVersioning.SchemaBehaviour – noizu_mnesia_versioning v0.1.2</title>
     <link rel="stylesheet" href="dist/app-268c9dc719.css" />
     
-    <script src="dist/sidebar_items-c874b68708.js"></script>
+    <script src="dist/sidebar_items-92793ae136.js"></script>
   </head>
   <body data-type="modules">
     <script>try { if(localStorage.getItem('night-mode')) document.body.className += ' night-mode'; } catch (e) { }</script>
@@ -27,7 +27,7 @@
         noizu_mnesia_versioning
       </h1>
       <h2 class="sidebar-projectVersion">
-        v0.1.1
+        v0.1.2
       </h2>
     </div>
     
@@ -63,11 +63,24 @@
 
 
       <h1>
-        <small class="visible-xs">noizu_mnesia_versioning v0.1.1</small>
+        <small class="visible-xs">noizu_mnesia_versioning v0.1.2</small>
         Noizu.MnesiaVersioning.SchemaBehaviour <small>behaviour</small>
+        
+          <a href="https://github.com/noizu/MnesiaVersioning/blob/master/lib/mnesia_versioning/behaviour/schema_behaviour.ex#L6" title="View Source" class="view-source" rel="help">
+            <span class="icon-code" aria-hidden="true"></span>
+            <span class="sr-only">View Source</span>
+          </a>
         
       </h1>
 
+      
+        <section id="moduledoc">
+          <p>This method provides information about the changesets we will be running.
+Currently only the change_sets() method is provided which should return a list of
+changesets structures to execute. In the future we will provide support for directory scanning,
+Similiar to how the test folders works.</p>
+
+        </section>
       
 
       
@@ -92,6 +105,11 @@
   <div class="summary-signature">
     <a href="#c:change_sets/0">change_sets()</a>
   </div>
+  
+    <div class="summary-synopsis"><p>Return array of changesets to be applied/rolledback.
+@note the current logic is fairly crude.
+One may simply implement a module that returns an inline array of changesets</p>
+</div>
   
 </div>
 
@@ -123,6 +141,11 @@
     </a>
     <span class="signature">change_sets()</span>
     
+      <a href="https://github.com/noizu/MnesiaVersioning/blob/master/lib/mnesia_versioning/behaviour/schema_behaviour.ex#L40" class="view-source" rel="help" title="View Source">
+       <span class="icon-code" aria-hidden="true"></span>
+       <span class="sr-only">View Source</span>
+     </a>
+    
     
     
       <div class="specs">
@@ -133,7 +156,31 @@
     
   </div>
   <section class="docstring">
-    
+    <p>Return array of changesets to be applied/rolledback.
+@note the current logic is fairly crude.
+One may simply implement a module that returns an inline array of changesets.</p>
+
+<pre><code class="elixir">defmodule MyApp.SchemaVersioning do
+  @behaviour Noizu.MnesiaVersioning.SchemaBehaviour
+  def change_sets() do
+  [
+    %ChangeSet{...},
+    %ChangeSet{...},
+  ]
+  end
+end
+</code></pre>
+
+<p>If desired, however, one could ofcourse put changesets into seperate module files
+and simply concatenate them together here.
+defmodule MyApp.SchemaVersioning do
+  @behaviour Noizu.MnesiaVersioning.SchemaBehaviour
+  def change<em>sets() do
+    # where the following each return an array of change sets. 
+    MyApp.SchemaVersioning.UserFeature.change</em>sets() ++ MyApp.SchemaVersioning.PokerGameFeature.change_sets()
+  end
+end</p>
+
   </section>
 </div>
 

@@ -4,28 +4,65 @@
 #-------------------------------------------------------------------------------
 
 defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
-  require Logger
+  @moduledoc """
+    The Migrate Tasks allows a user to apply or rollback changesets.
+    Currently to use this task a user much implement a Mix.Tasks.Migrate (or similiarly named)
+    module and load the Noizu Implementation with a use statement.
 
+    *Example*
+    ```
+    defmodule Mix.Tasks.Migrate do
+      use Noizu.MnesiaVersioning.Tasks.Migrate
+    end
+    ```
 
+    *Usage*
+    || Command                                     || Notes                                                ||  Example                                                      ||
+    | `mix migrate`                                 | Apply any unapplied changesets for current Mix.env    | `mix migrate`                                                  |
+    | `mix migrate count %count%`                   | Apply specified number of unapplied changesets        | `mix migrate count 5`                                          |
+    | `mix migrate change %set% %author%`           | Apply a specific changeset by id and author.          | `mix migrate change "New User Tables" "Keith Brings"`          |
+    | `mix migrate rollback count %count%`          | Rollback specified number of changesets.              | `mix migrate rollback count 5`                                 |
+    | `mix migrate rollback change %set% %author%"` | Rollback specific changeset by name and author.       | `mix migrate rollback change "New User Tables" "Keith Brings"` |
+
+    *Configuration*
+    The user must provide modules that implement the `Noizu.MnesiaVersioning.SchemaBehaviour` and `Noizu.MnesiaVersioning.TopologyBehaviour` behaviours.
+    The providers may be specified in the user's config file or as options to the use Noizu.MnesiaVersioning.Tasks.Migrate task.
+    The user may additionally choose to use a database other than Noizu.MnesiaVersioning.DAtabase for tracking schema versioning by insuring it is created/creatable and passing as a option to this command, or as a config paramater.
+
+    *Configration Example: config.exs*
+    ```
+      config Noizu.MnesiaVersioning,
+        topology_provider: MyApp.Mnesia.TopologyProvider,
+        schema_provider: MyApp.Mnesia.SchemaProvider
+    ```
+
+    *Configration Example: using arguments*
+    ```
+      defmodule Mix.Tasks.Migrate do
+        use Noizu.MnesiaVersioning.Tasks.Migrate,
+          topology_provider: MyApp.Mnesia.AlternativeTopologyProvider,
+          schema_provider: MyApp.Mnesia.AlternativeSchemaProvider
+      end
+    ```
+  """
   defmacro __using__(options) do
-    versioning_table = Dict.get(options, :versioning_table, Noizu.MnesiaVersioning)
+    versioning_table = Dict.get(options, :versioning_table, Application.get_env(Noizu.MnesiaVersioning, :versioning_table, Noizu.MnesiaVersioning.Database))
 
     topology_provider = Dict.get(options, :topology_provider, Application.get_env(Noizu.MnesiaVersioning, :topology_provider, :required_setting))
     if topology_provider == :required_setting do
-      Logger.error "MnesiaVersioningInit - To use the Noizu.MnesiaVersioning library you must specify a topology_provider option in the noizu_mnesia_versioning config section. For more details @see mnesia_versioning/doc/config.md"
+      IO.puts  "MnesiaVersioningInit - To use the Noizu.MnesiaVersioning library you must specify a topology_provider option in the noizu_mnesia_versioning config section. For more details @see mnesia_versioning/doc/config.md"
       raise "Noizu.MnesiaVersioning :topology_provider setting not configured. @see mnesia_versioning/doc/config.md for more details."
     end
 
     schema_provider = Dict.get(options, :schema_provider, Application.get_env(Noizu.MnesiaVersioning, :schema_provider, :required_setting))
     if schema_provider == :required_setting do
-      Logger.error "MnesiaVersioningInit - To use the Noizu.MnesiaVersioning library you must specify a schema_provider option in the noizu_mnesia_versioning config section. For more details @see mnesia_versioning/doc/config.md"
+      IO.puts  "MnesiaVersioningInit - To use the Noizu.MnesiaVersioning library you must specify a schema_provider option in the noizu_mnesia_versioning config section. For more details @see mnesia_versioning/doc/config.md"
       raise "Noizu.MnesiaVersioning :schema_provider setting not configured. @see mnesia_versioning/doc/config.md for more details."
     end
 
     quote do
       require Amnesia
       require Amnesia.Helper
-      require Logger
       alias Noizu.MnesiaVersioning.ChangeSet
       alias unquote(versioning_table).ChangeSets
       use Mix.Task
@@ -69,7 +106,7 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
           h = change_sets()
             |> Enum.find(fn(x) -> {change, author} == {x.changeset, x.author} end)
           if h == :nil do
-            Logger.error "No such changeset exists: #{inspect {change, author}}"
+            IO.puts  "No such changeset exists: #{inspect {change, author}}"
           else
             # determine if entry has already been executed.
             record = Amnesia.transaction do
@@ -347,16 +384,20 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
       #-----------------------------------------------------------------------------
       # Helper Methods
       #-----------------------------------------------------------------------------
-      defp spin_down(table) do
+      defp spin_down(databases) when is_list(databases) do
         # Wait for defined tables to load in order to avoid erroneous ets insert records to show
         # after stopping Amnesia before completly loading a table.
-        tables = table.tables()
-        for table <- tables do
-          if(Amnesia.Table.exists?(table)) do
-            Amnesia.Table.wait([table])
-          end
-        end
-      end
+        for database <- databases do
+          tables = database.tables()
+          for table <- tables do
+            if(Amnesia.Table.exists?(table)) do
+              Amnesia.Table.wait([table])
+            end
+          end # end for tables
+        end # end for databases
+      end # end spin_down/1
+
+      defp spin_down(database), do: spin_down([database])
 
     end # end quote do
   end  # end using

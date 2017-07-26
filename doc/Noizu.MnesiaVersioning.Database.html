@@ -5,10 +5,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.16.2">
-    <title>Noizu.MnesiaVersioning.Database – noizu_mnesia_versioning v0.1.1</title>
+    <title>Noizu.MnesiaVersioning.Database – noizu_mnesia_versioning v0.1.2</title>
     <link rel="stylesheet" href="dist/app-268c9dc719.css" />
     
-    <script src="dist/sidebar_items-c874b68708.js"></script>
+    <script src="dist/sidebar_items-92793ae136.js"></script>
   </head>
   <body data-type="modules">
     <script>try { if(localStorage.getItem('night-mode')) document.body.className += ' night-mode'; } catch (e) { }</script>
@@ -27,7 +27,7 @@
         noizu_mnesia_versioning
       </h1>
       <h2 class="sidebar-projectVersion">
-        v0.1.1
+        v0.1.2
       </h2>
     </div>
     
@@ -63,16 +63,19 @@
 
 
       <h1>
-        <small class="visible-xs">noizu_mnesia_versioning v0.1.1</small>
+        <small class="visible-xs">noizu_mnesia_versioning v0.1.2</small>
         Noizu.MnesiaVersioning.Database
+        
+          <a href="https://github.com/noizu/MnesiaVersioning/blob/master/lib/mnesia_versioning/database.ex#L7" title="View Source" class="view-source" rel="help">
+            <span class="icon-code" aria-hidden="true"></span>
+            <span class="sr-only">View Source</span>
+          </a>
         
       </h1>
 
       
         <section id="moduledoc">
-          <p>The Changeset table is responsbile for tracking database changset status.
-Schema changes are packaged into changesets that include apply and rollback methods.
-When using Noizu Provided helpers the system is capable of generating the appropriate rolback steps.</p>
+          <p>The Noizu.MnesiaVersioning.Database tracks state to determine which change sets have already been applied or that have been modified since initial inclusion.</p>
 
         </section>
       
@@ -194,6 +197,11 @@ raises in case of error</p>
     </a>
     <span class="signature">__using__(opts)</span>
     
+      <a href="https://github.com/noizu/MnesiaVersioning/blob/master/lib/mnesia_versioning/database.ex#L7" class="view-source" rel="help" title="View Source">
+       <span class="icon-code" aria-hidden="true"></span>
+       <span class="sr-only">View Source</span>
+     </a>
+    
     
       <span class="note">(macro)</span>
     
@@ -215,6 +223,11 @@ needed.</p>
       <span class="sr-only">Link to this function</span>
     </a>
     <span class="signature">create(copying \\ [])</span>
+    
+      <a href="https://github.com/noizu/MnesiaVersioning/blob/master/lib/mnesia_versioning/database.ex#L7" class="view-source" rel="help" title="View Source">
+       <span class="icon-code" aria-hidden="true"></span>
+       <span class="sr-only">View Source</span>
+     </a>
     
     
     
@@ -241,6 +254,11 @@ needed.</p>
     </a>
     <span class="signature">create!(copying \\ [])</span>
     
+      <a href="https://github.com/noizu/MnesiaVersioning/blob/master/lib/mnesia_versioning/database.ex#L7" class="view-source" rel="help" title="View Source">
+       <span class="icon-code" aria-hidden="true"></span>
+       <span class="sr-only">View Source</span>
+     </a>
+    
     
     
       <div class="specs">
@@ -265,6 +283,11 @@ in case of error.</p>
     </a>
     <span class="signature">destroy()</span>
     
+      <a href="https://github.com/noizu/MnesiaVersioning/blob/master/lib/mnesia_versioning/database.ex#L7" class="view-source" rel="help" title="View Source">
+       <span class="icon-code" aria-hidden="true"></span>
+       <span class="sr-only">View Source</span>
+     </a>
+    
     
     
       <div class="specs">
@@ -287,6 +310,11 @@ in case of error.</p>
       <span class="sr-only">Link to this function</span>
     </a>
     <span class="signature">destroy!()</span>
+    
+      <a href="https://github.com/noizu/MnesiaVersioning/blob/master/lib/mnesia_versioning/database.ex#L7" class="view-source" rel="help" title="View Source">
+       <span class="icon-code" aria-hidden="true"></span>
+       <span class="sr-only">View Source</span>
+     </a>
     
     
     
@@ -312,6 +340,11 @@ raises in case of error.</p>
     </a>
     <span class="signature">metadata()</span>
     
+      <a href="https://github.com/noizu/MnesiaVersioning/blob/master/lib/mnesia_versioning/database.ex#L7" class="view-source" rel="help" title="View Source">
+       <span class="icon-code" aria-hidden="true"></span>
+       <span class="sr-only">View Source</span>
+     </a>
+    
     
     
       <div class="specs">
@@ -333,6 +366,11 @@ raises in case of error.</p>
       <span class="sr-only">Link to this function</span>
     </a>
     <span class="signature">tables()</span>
+    
+      <a href="https://github.com/noizu/MnesiaVersioning/blob/master/lib/mnesia_versioning/database.ex#L7" class="view-source" rel="help" title="View Source">
+       <span class="icon-code" aria-hidden="true"></span>
+       <span class="sr-only">View Source</span>
+     </a>
     
     
     
@@ -358,6 +396,11 @@ raises in case of error.</p>
       <span class="sr-only">Link to this function</span>
     </a>
     <span class="signature">wait(timeout \\ :infinity)</span>
+    
+      <a href="https://github.com/noizu/MnesiaVersioning/blob/master/lib/mnesia_versioning/database.ex#L7" class="view-source" rel="help" title="View Source">
+       <span class="icon-code" aria-hidden="true"></span>
+       <span class="sr-only">View Source</span>
+     </a>
     
     
     

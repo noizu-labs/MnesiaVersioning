@@ -5,10 +5,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.16.2">
-    <title>Noizu.MnesiaVersioning.TopologyBehaviour – noizu_mnesia_versioning v0.1.1</title>
+    <title>Noizu.MnesiaVersioning.TopologyBehaviour – noizu_mnesia_versioning v0.1.2</title>
     <link rel="stylesheet" href="dist/app-268c9dc719.css" />
     
-    <script src="dist/sidebar_items-c874b68708.js"></script>
+    <script src="dist/sidebar_items-92793ae136.js"></script>
   </head>
   <body data-type="modules">
     <script>try { if(localStorage.getItem('night-mode')) document.body.className += ' night-mode'; } catch (e) { }</script>
@@ -27,7 +27,7 @@
         noizu_mnesia_versioning
       </h1>
       <h2 class="sidebar-projectVersion">
-        v0.1.1
+        v0.1.2
       </h2>
     </div>
     
@@ -63,11 +63,22 @@
 
 
       <h1>
-        <small class="visible-xs">noizu_mnesia_versioning v0.1.1</small>
+        <small class="visible-xs">noizu_mnesia_versioning v0.1.2</small>
         Noizu.MnesiaVersioning.TopologyBehaviour <small>behaviour</small>
+        
+          <a href="https://github.com/noizu/MnesiaVersioning/blob/master/lib/mnesia_versioning/behaviour/topology_behaviour.ex#L6" title="View Source" class="view-source" rel="help">
+            <span class="icon-code" aria-hidden="true"></span>
+            <span class="sr-only">View Source</span>
+          </a>
         
       </h1>
 
+      
+        <section id="moduledoc">
+          <p>The Topology behaviour allows a user to pass environment information to the versioning system such as mnesia nodes schema should be created on
+and the name of the database under version control.</p>
+
+        </section>
       
 
       
@@ -93,11 +104,21 @@
     <a href="#c:database/0">database()</a>
   </div>
   
+    <div class="summary-synopsis"><p>The method simply returns the name of the user&#39;s Amnesia Database(s) (defdatabase) modules under version control.
+After the migrate tasks has completed logic is run to insure all existing tables are online before halting Amnesia.
+To avoid ets insert and or synch problems during schema migration</p>
+</div>
+  
 </div>
 <div class="summary-row">
   <div class="summary-signature">
     <a href="#c:mnesia_nodes/0">mnesia_nodes()</a>
   </div>
+  
+    <div class="summary-synopsis"><p>The mnesia_nodes function should return the list of mnesia instances that tables are created on.
+Users may, ofcourse, use different nodes in their changeset.update/rollback steps however they must provide
+additional logic to insure nodes are reachable/linked</p>
+</div>
   
 </div>
 
@@ -129,17 +150,33 @@
     </a>
     <span class="signature">database()</span>
     
+      <a href="https://github.com/noizu/MnesiaVersioning/blob/master/lib/mnesia_versioning/behaviour/topology_behaviour.ex#L34" class="view-source" rel="help" title="View Source">
+       <span class="icon-code" aria-hidden="true"></span>
+       <span class="sr-only">View Source</span>
+     </a>
+    
     
     
       <div class="specs">
         
-          <pre>database() :: Module</pre>
+          <pre>database() :: Module | [Module]</pre>
         
       </div>
     
   </div>
   <section class="docstring">
-    
+    <p>The method simply returns the name of the user&#39;s Amnesia Database(s) (defdatabase) modules under version control.
+After the migrate tasks has completed logic is run to insure all existing tables are online before halting Amnesia.
+To avoid ets insert and or synch problems during schema migration.</p>
+
+<pre><code class="elixir">  tables = table.tables()
+  for table &lt;- tables do
+    if(Amnesia.Table.exists?(table)) do
+      Amnesia.Table.wait([table])
+    end
+  end
+</code></pre>
+
   </section>
 </div>
 <div class="detail" id="c:mnesia_nodes/0">
@@ -151,6 +188,11 @@
     </a>
     <span class="signature">mnesia_nodes()</span>
     
+      <a href="https://github.com/noizu/MnesiaVersioning/blob/master/lib/mnesia_versioning/behaviour/topology_behaviour.ex#L17" class="view-source" rel="help" title="View Source">
+       <span class="icon-code" aria-hidden="true"></span>
+       <span class="sr-only">View Source</span>
+     </a>
+    
     
     
       <div class="specs">
@@ -161,7 +203,10 @@
     
   </div>
   <section class="docstring">
-    
+    <p>The mnesia_nodes function should return the list of mnesia instances that tables are created on.
+Users may, ofcourse, use different nodes in their changeset.update/rollback steps however they must provide
+additional logic to insure nodes are reachable/linked.</p>
+
   </section>
 </div>
 

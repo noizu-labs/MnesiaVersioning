@@ -5,10 +5,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.16.2">
-    <title>Noizu.MnesiaVersioning.Tasks.Migrate – noizu_mnesia_versioning v0.1.1</title>
+    <title>Noizu.MnesiaVersioning.Tasks.Migrate – noizu_mnesia_versioning v0.1.2</title>
     <link rel="stylesheet" href="dist/app-268c9dc719.css" />
     
-    <script src="dist/sidebar_items-c874b68708.js"></script>
+    <script src="dist/sidebar_items-92793ae136.js"></script>
   </head>
   <body data-type="modules">
     <script>try { if(localStorage.getItem('night-mode')) document.body.className += ' night-mode'; } catch (e) { }</script>
@@ -27,7 +27,7 @@
         noizu_mnesia_versioning
       </h1>
       <h2 class="sidebar-projectVersion">
-        v0.1.1
+        v0.1.2
       </h2>
     </div>
     
@@ -63,11 +63,59 @@
 
 
       <h1>
-        <small class="visible-xs">noizu_mnesia_versioning v0.1.1</small>
+        <small class="visible-xs">noizu_mnesia_versioning v0.1.2</small>
         Noizu.MnesiaVersioning.Tasks.Migrate
+        
+          <a href="https://github.com/noizu/MnesiaVersioning/blob/master/lib/mnesia_versioning/tasks/migrate.ex#L6" title="View Source" class="view-source" rel="help">
+            <span class="icon-code" aria-hidden="true"></span>
+            <span class="sr-only">View Source</span>
+          </a>
         
       </h1>
 
+      
+        <section id="moduledoc">
+          <p>The Migrate Tasks allows a user to apply or rollback changesets.
+  Currently to use this task a user much implement a Mix.Tasks.Migrate (or similiarly named)
+  module and load the Noizu Implementation with a use statement.</p>
+
+<p><em>Example</em>
+  <code>
+  defmodule Mix.Tasks.Migrate do
+    use Noizu.MnesiaVersioning.Tasks.Migrate
+  end
+</code></p>
+
+<p><em>Usage</em>
+  || Command                                     || Notes                                                ||  Example                                                      ||
+  | <code>mix migrate</code>                                 | Apply any unapplied changesets for current Mix.env    | <code>mix migrate</code>                                                  |
+  | <code>mix migrate count %count%</code>                   | Apply specified number of unapplied changesets        | <code>mix migrate count 5</code>                                          |
+  | <code>mix migrate change %set% %author%</code>           | Apply a specific changeset by id and author.          | <code>mix migrate change &quot;New User Tables&quot; &quot;Keith Brings&quot;</code>          |
+  | <code>mix migrate rollback count %count%</code>          | Rollback specified number of changesets.              | <code>mix migrate rollback count 5</code>                                 |
+  | <code>mix migrate rollback change %set% %author%&quot;</code> | Rollback specific changeset by name and author.       | <code>mix migrate rollback change &quot;New User Tables&quot; &quot;Keith Brings&quot;</code> |</p>
+
+<p><em>Configuration</em>
+  The user must provide modules that implement the <a href="Noizu.MnesiaVersioning.SchemaBehaviour.html"><code>Noizu.MnesiaVersioning.SchemaBehaviour</code></a> and <a href="Noizu.MnesiaVersioning.TopologyBehaviour.html"><code>Noizu.MnesiaVersioning.TopologyBehaviour</code></a> behaviours.
+  The providers may be specified in the user&#39;s config file or as options to the use Noizu.MnesiaVersioning.Tasks.Migrate task.
+  The user may additionally choose to use a database other than Noizu.MnesiaVersioning.DAtabase for tracking schema versioning by insuring it is created/creatable and passing as a option to this command, or as a config paramater.</p>
+
+<p><em>Configration Example: config.exs</em>
+  <code>
+    config Noizu.MnesiaVersioning,
+      topology_provider: MyApp.Mnesia.TopologyProvider,
+      schema_provider: MyApp.Mnesia.SchemaProvider
+</code></p>
+
+<p><em>Configration Example: using arguments</em>
+  <code>
+    defmodule Mix.Tasks.Migrate do
+      use Noizu.MnesiaVersioning.Tasks.Migrate,
+        topology_provider: MyApp.Mnesia.AlternativeTopologyProvider,
+        schema_provider: MyApp.Mnesia.AlternativeSchemaProvider
+    end
+</code></p>
+
+        </section>
       
 
       

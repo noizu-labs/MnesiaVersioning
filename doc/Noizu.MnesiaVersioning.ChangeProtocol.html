@@ -5,10 +5,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.16.2">
-    <title>Noizu.MnesiaVersioning.ChangeProtocol – noizu_mnesia_versioning v0.1.1</title>
+    <title>Noizu.MnesiaVersioning.ChangeProtocol – noizu_mnesia_versioning v0.1.2</title>
     <link rel="stylesheet" href="dist/app-268c9dc719.css" />
     
-    <script src="dist/sidebar_items-c874b68708.js"></script>
+    <script src="dist/sidebar_items-92793ae136.js"></script>
   </head>
   <body data-type="protocols">
     <script>try { if(localStorage.getItem('night-mode')) document.body.className += ' night-mode'; } catch (e) { }</script>
@@ -27,7 +27,7 @@
         noizu_mnesia_versioning
       </h1>
       <h2 class="sidebar-projectVersion">
-        v0.1.1
+        v0.1.2
       </h2>
     </div>
     
@@ -63,11 +63,28 @@
 
 
       <h1>
-        <small class="visible-xs">noizu_mnesia_versioning v0.1.1</small>
+        <small class="visible-xs">noizu_mnesia_versioning v0.1.2</small>
         Noizu.MnesiaVersioning.ChangeProtocol <small>protocol</small>
+        
+          <a href="https://github.com/noizu/MnesiaVersioning/blob/master/lib/mnesia_versioning/protocols/change_protocol.ex#L2" title="View Source" class="view-source" rel="help">
+            <span class="icon-code" aria-hidden="true"></span>
+            <span class="sr-only">View Source</span>
+          </a>
         
       </h1>
 
+      
+        <section id="moduledoc">
+          <p>This protocol will be used to provide changeset steps that can automatically generate rollback commands.
+  The migration command will use this protocal to see if a given changeset&#39;s update command(s)
+  can be automatically rollbacked if no rollback options are provided.</p>
+
+<p>This will allow, for example, the user to simply include  create table changesets and need to to explicitly include boilerplate
+  <code>MyTable.wait()</code> and <code>MyTable.destroy()</code> calls in their rollback steps.</p>
+
+<p>@NOT<em>YET</em>IMPLEMENTED</p>
+
+        </section>
       
 
       
@@ -101,19 +118,19 @@
     </h2>
     <div class="summary-row">
   <div class="summary-signature">
-    <a href="#apply/1">apply(self)</a>
+    <a href="#apply/1">apply(this)</a>
   </div>
   
 </div>
 <div class="summary-row">
   <div class="summary-signature">
-    <a href="#auto_rollback?/1">auto_rollback?(self)</a>
+    <a href="#auto_rollback?/1">auto_rollback?(this)</a>
   </div>
   
 </div>
 <div class="summary-row">
   <div class="summary-signature">
-    <a href="#rollback/1">rollback(self)</a>
+    <a href="#rollback/1">rollback(this)</a>
   </div>
   
 </div>
@@ -144,6 +161,11 @@
       <span class="sr-only">Link to this type</span>
     </a>
     <span class="signature">t()</span>
+    
+      <a href="https://github.com/noizu/MnesiaVersioning/blob/master/lib/mnesia_versioning/protocols/change_protocol.ex#L2" class="view-source" rel="help" title="View Source">
+       <span class="icon-code" aria-hidden="true"></span>
+       <span class="sr-only">View Source</span>
+     </a>
     
     
     
@@ -179,7 +201,12 @@
       <span class="icon-link" aria-hidden="true"></span>
       <span class="sr-only">Link to this function</span>
     </a>
-    <span class="signature">apply(self)</span>
+    <span class="signature">apply(this)</span>
+    
+      <a href="https://github.com/noizu/MnesiaVersioning/blob/master/lib/mnesia_versioning/protocols/change_protocol.ex#L14" class="view-source" rel="help" title="View Source">
+       <span class="icon-code" aria-hidden="true"></span>
+       <span class="sr-only">View Source</span>
+     </a>
     
     
     
@@ -195,7 +222,12 @@
       <span class="icon-link" aria-hidden="true"></span>
       <span class="sr-only">Link to this function</span>
     </a>
-    <span class="signature">auto_rollback?(self)</span>
+    <span class="signature">auto_rollback?(this)</span>
+    
+      <a href="https://github.com/noizu/MnesiaVersioning/blob/master/lib/mnesia_versioning/protocols/change_protocol.ex#L16" class="view-source" rel="help" title="View Source">
+       <span class="icon-code" aria-hidden="true"></span>
+       <span class="sr-only">View Source</span>
+     </a>
     
     
     
@@ -211,7 +243,12 @@
       <span class="icon-link" aria-hidden="true"></span>
       <span class="sr-only">Link to this function</span>
     </a>
-    <span class="signature">rollback(self)</span>
+    <span class="signature">rollback(this)</span>
+    
+      <a href="https://github.com/noizu/MnesiaVersioning/blob/master/lib/mnesia_versioning/protocols/change_protocol.ex#L15" class="view-source" rel="help" title="View Source">
+       <span class="icon-code" aria-hidden="true"></span>
+       <span class="sr-only">View Source</span>
+     </a>
     
     
     

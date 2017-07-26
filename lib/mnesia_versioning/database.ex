@@ -6,17 +6,21 @@
 use Amnesia
 defdatabase Noizu.MnesiaVersioning.Database do
   @moduledoc """
-  The Changeset table is responsbile for tracking database changset status.
-  Schema changes are packaged into changesets that include apply and rollback methods.
-  When using Noizu Provided helpers the system is capable of generating the appropriate rolback steps.
+  The Noizu.MnesiaVersioning.Database tracks state to determine which change sets have already been applied or that have been modified since initial inclusion.
   """
+
   deftable ChangeSets, [:key, :changeset, :author, :note, :date, :state, :hash], type: :ordered_set, index: [:changeset, :author] do
+    @moduledoc """
+    The Changeset table is responsbile for tracking database changset status.
+    Schema changes are packaged into changesets that include apply and rollback methods.
+    When using Noizu Provided helpers the system is capable of generating the appropriate rolback steps.
+    """
     @type t :: %ChangeSets{
       key: {String.t, String.t},
       changeset: String.t,
       author: String.t,
       note: String.t,
-      date: Timex.DateTime.t,
+      date: DateTime.t,
       state: :applied | :removed | :pending | :failure,
       hash: String.t
     }
@@ -27,7 +31,7 @@ defdatabase Noizu.MnesiaVersioning.Database do
         changeset: changeset.changeset,
         author: changeset.author,
         note: changeset.note,
-        date: Timex.now,
+        date: DateTime.utc_now(),
         state: outcome,
         hash: "HASH SUPPORT PENDING"
       }

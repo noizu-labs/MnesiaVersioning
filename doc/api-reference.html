@@ -5,10 +5,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.16.2">
-    <title>API Reference – noizu_mnesia_versioning v0.1.1</title>
+    <title>API Reference – noizu_mnesia_versioning v0.1.2</title>
     <link rel="stylesheet" href="dist/app-268c9dc719.css" />
     
-    <script src="dist/sidebar_items-c874b68708.js"></script>
+    <script src="dist/sidebar_items-92793ae136.js"></script>
   </head>
   <body data-type="extras">
     <script>try { if(localStorage.getItem('night-mode')) document.body.className += ' night-mode'; } catch (e) { }</script>
@@ -27,7 +27,7 @@
         noizu_mnesia_versioning
       </h1>
       <h2 class="sidebar-projectVersion">
-        v0.1.1
+        v0.1.2
       </h2>
     </div>
     
@@ -63,7 +63,7 @@
 
 
 <h1>
-  <small class="visible-xs">noizu_mnesia_versioning v0.1.1</small>
+  <small class="visible-xs">noizu_mnesia_versioning v0.1.2</small>
   API Reference
 </h1>
 
@@ -78,9 +78,21 @@
       <div class="summary-row">
   <div class="summary-signature"><a href="Noizu.MnesiaVersioning.ChangeSet.html">Noizu.MnesiaVersioning.ChangeSet</a></div>
   
+    <div class="summary-synopsis"><p>This structure contains the steps required to apply or rollback a schema change,
+along with meta data such as the given name of the change <code>changeset</code>, editor <code>:author</code>,
+and misc. notes on what is being changes <code>:note</code></p>
+</div>
+  
 </div>
 <div class="summary-row">
   <div class="summary-signature"><a href="Noizu.MnesiaVersioning.Database.html">Noizu.MnesiaVersioning.Database</a></div>
+  
+    <div class="summary-synopsis"><p>The Noizu.MnesiaVersioning.Database tracks state to determine which change sets have already been applied or that have been modified since initial inclusion</p>
+</div>
+  
+</div>
+<div class="summary-row">
+  <div class="summary-signature"><a href="Noizu.MnesiaVersioning.Database.ChangeSets.html">Noizu.MnesiaVersioning.Database.ChangeSets</a></div>
   
     <div class="summary-synopsis"><p>The Changeset table is responsbile for tracking database changset status.
 Schema changes are packaged into changesets that include apply and rollback methods.
@@ -89,27 +101,40 @@ When using Noizu Provided helpers the system is capable of generating the approp
   
 </div>
 <div class="summary-row">
-  <div class="summary-signature"><a href="Noizu.MnesiaVersioning.Database.ChangeSets.html">Noizu.MnesiaVersioning.Database.ChangeSets</a></div>
-  
-</div>
-<div class="summary-row">
   <div class="summary-signature"><a href="Noizu.MnesiaVersioning.SchemaBehaviour.html">Noizu.MnesiaVersioning.SchemaBehaviour</a></div>
+  
+    <div class="summary-synopsis"><p>This method provides information about the changesets we will be running.
+Currently only the change_sets() method is provided which should return a list of
+changesets structures to execute. In the future we will provide support for directory scanning,
+Similiar to how the test folders works</p>
+</div>
   
 </div>
 <div class="summary-row">
   <div class="summary-signature"><a href="Noizu.MnesiaVersioning.Tasks.Install.html">Noizu.MnesiaVersioning.Tasks.Install</a></div>
   
-    <div class="summary-synopsis"><p>User must specify the underling schema(s) maintained by this library in their
-config.exs file under  :noizu<em>mnesia</em>versioning, :databases [DatabaseName]</p>
+    <div class="summary-synopsis"><p>The Install Tasks creates the initial Mnesia schema and inserts the necessary record keeping tables for tracking schema versioning.
+If you already have an existing schema you may run with the <code>--skip-schema</code> option to only insure the tracking tables are created.
+This tasks will connect to all mnesia nodes specified by your <code>:topology_provider.mnesia_nodes</code> method. If you are running as a single
+unnamed node simply return a nil or empty list [] value in your mnesia_nodes implementation</p>
 </div>
   
 </div>
 <div class="summary-row">
   <div class="summary-signature"><a href="Noizu.MnesiaVersioning.Tasks.Migrate.html">Noizu.MnesiaVersioning.Tasks.Migrate</a></div>
   
+    <div class="summary-synopsis"><p>The Migrate Tasks allows a user to apply or rollback changesets.
+  Currently to use this task a user much implement a Mix.Tasks.Migrate (or similiarly named)
+  module and load the Noizu Implementation with a use statement</p>
+</div>
+  
 </div>
 <div class="summary-row">
   <div class="summary-signature"><a href="Noizu.MnesiaVersioning.TopologyBehaviour.html">Noizu.MnesiaVersioning.TopologyBehaviour</a></div>
+  
+    <div class="summary-synopsis"><p>The Topology behaviour allows a user to pass environment information to the versioning system such as mnesia nodes schema should be created on
+and the name of the database under version control</p>
+</div>
   
 </div>
 
@@ -129,6 +154,11 @@ config.exs file under  :noizu<em>mnesia</em>versioning, :databases [DatabaseName
     <div class="summary">
       <div class="summary-row">
   <div class="summary-signature"><a href="Noizu.MnesiaVersioning.ChangeProtocol.html">Noizu.MnesiaVersioning.ChangeProtocol</a></div>
+  
+    <div class="summary-synopsis"><p>This protocol will be used to provide changeset steps that can automatically generate rollback commands.
+  The migration command will use this protocal to see if a given changeset&#39;s update command(s)
+  can be automatically rollbacked if no rollback options are provided</p>
+</div>
   
 </div>
 
