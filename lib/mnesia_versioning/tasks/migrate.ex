@@ -46,27 +46,31 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
     ```
   """
   defmacro __using__(options) do
-    versioning_table = Dict.get(options, :versioning_table, Application.get_env(Noizu.MnesiaVersioning, :versioning_table, Noizu.MnesiaVersioning.Database))
+    versioning_table = Keyword.get(options, :versioning_table, Application.get_env(Noizu.MnesiaVersioning, :versioning_table, Noizu.MnesiaVersioning.Database))
 
-    topology_provider = Dict.get(options, :topology_provider, Application.get_env(Noizu.MnesiaVersioning, :topology_provider, :required_setting))
+    topology_provider = Keyword.get(options, :topology_provider, Application.get_env(Noizu.MnesiaVersioning, :topology_provider, :required_setting))
     if topology_provider == :required_setting do
       IO.puts  "MnesiaVersioningInit - To use the Noizu.MnesiaVersioning library you must specify a topology_provider option in the noizu_mnesia_versioning config section. For more details @see mnesia_versioning/doc/config.md"
       raise "Noizu.MnesiaVersioning :topology_provider setting not configured. @see mnesia_versioning/doc/config.md for more details."
     end
 
-    schema_provider = Dict.get(options, :schema_provider, Application.get_env(Noizu.MnesiaVersioning, :schema_provider, :required_setting))
+    schema_provider = Keyword.get(options, :schema_provider, Application.get_env(Noizu.MnesiaVersioning, :schema_provider, :required_setting))
     if schema_provider == :required_setting do
       IO.puts  "MnesiaVersioningInit - To use the Noizu.MnesiaVersioning library you must specify a schema_provider option in the noizu_mnesia_versioning config section. For more details @see mnesia_versioning/doc/config.md"
       raise "Noizu.MnesiaVersioning :schema_provider setting not configured. @see mnesia_versioning/doc/config.md for more details."
     end
 
     quote do
-      require Amnesia
-      require Amnesia.Helper
       alias Noizu.MnesiaVersioning.ChangeSet
       alias unquote(versioning_table).ChangeSets
+
+
+      require Amnesia
+      require Amnesia.Helper
+
       use Mix.Task
       use unquote(versioning_table)
+      use unquote(versioning_table).ChangeSets
 
       import unquote(__MODULE__)
 

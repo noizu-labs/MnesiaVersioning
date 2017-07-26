@@ -53,8 +53,8 @@ defmodule Noizu.MnesiaVersioning.Tasks.Install do
   """
 
   defmacro __using__(options) do
-    versioning_table = Dict.get(options, :versioning_table, Application.get_env(Noizu.MnesiaVersioning, :versioning_table, Noizu.MnesiaVersioning.Database))
-    topology_provider = Dict.get(options, :topology_provider, Application.get_env(Noizu.MnesiaVersioning, :topology_provider, :required_setting))
+    versioning_table = Keyword.get(options, :versioning_table, Application.get_env(Noizu.MnesiaVersioning, :versioning_table, Noizu.MnesiaVersioning.Database))
+    topology_provider = Keyword.get(options, :topology_provider, Application.get_env(Noizu.MnesiaVersioning, :topology_provider, :required_setting))
     if topology_provider == :required_setting do
       IO.puts  "#{__MODULE__} - To use the Noizu.MnesiaVersioning library you must specify a topology_provider option in the noizu_mnesia_versioning config section. For more details @see mnesia_versioning/doc/config.md"
       raise "Noizu.MnesiaVersioning :topology_provider setting not configured. @see mnesia_versioning/doc/config.md for more details."
@@ -63,8 +63,10 @@ defmodule Noizu.MnesiaVersioning.Tasks.Install do
     quote do
       require Amnesia
       require Amnesia.Helper
+
       use unquote(versioning_table)
       use Mix.Task
+
       import unquote(__MODULE__)
 
 

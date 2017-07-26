@@ -3,7 +3,7 @@ defmodule Noizu.MnesiaVersioning.Mixfile do
 
   def project do
     [app: :noizu_mnesia_versioning,
-     version: "0.1.2",
+     version: "0.1.3",
      elixir: "~> 1.4",
      package: package(),
      deps: deps(),
@@ -33,10 +33,10 @@ defmodule Noizu.MnesiaVersioning.Mixfile do
   end
 
   defp docs do
-  [
-    source_url_pattern: "https://github.com/noizu/MnesiaVersioning/blob/master/%{path}#L%{line}",
-    extras: ["README.md", "markdown/config.md"]
-  ]
-end
+    [
+      source_url_pattern: "https://github.com/noizu/MnesiaVersioning/blob/master/%{path}#L%{line}",
+      extras: ["README.md", "markdown/config.md"]
+    ]
+  end
 
 end
