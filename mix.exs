@@ -26,7 +26,7 @@ defmodule Noizu.MnesiaVersioning.Mixfile do
 
   defp deps do
     [
-      {:ex_doc, "~> 0.11", only: [:dev], optional: true, only: [:dev]}, # Documentation Provider
+      {:ex_doc, "~> 0.16.2", only: [:dev], optional: true}, # Documentation Provider
       {:markdown, github: "devinus/markdown", only: [:dev], optional: true}, # Markdown processor for ex_doc
       {:amnesia, git: "https://github.com/meh/amnesia.git", ref: "87d8b4f"}, # Mnesia Wrapper
     ]
