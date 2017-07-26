@@ -3,7 +3,7 @@ defmodule Noizu.MnesiaVersioning.Mixfile do
 
   def project do
     [app: :noizu_mnesia_versioning,
-     version: "0.1.0",
+     version: "0.1.1",
      elixir: "~> 1.4",
      package: package(),
      deps: deps(),
@@ -26,10 +26,17 @@ defmodule Noizu.MnesiaVersioning.Mixfile do
   defp deps do
     [
       {:lager, github: "basho/lager", tag: "3.2.4"},
-      { :ex_doc, "~> 0.11", only: [:dev] },
+      {:ex_doc, "~> 0.11", only: [:dev], optional: true, only: [:dev]}, # Documentation Provider
+      {:markdown, github: "devinus/markdown", only: [:dev], optional: true}, # Markdown processor for ex_doc
       {:amnesia, git: "https://github.com/meh/amnesia.git", ref: "87d8b4f"}, # Mnesia Wrapper
-
     ]
   end
+
+  defp docs do
+  [
+    source_url_pattern: "https://github.com/noizu/mnesia_versioning/blob/master/%{path}#L%{line}",
+    extras: ["README.md", "markdown/config.md"]
+  ]
+end
 
 end

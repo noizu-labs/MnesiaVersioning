@@ -8,6 +8,8 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
 
 
   defmacro __using__(options) do
+    versioning_table = Dict.get(options, :versioning_table, Noizu.MnesiaVersioning)
+
     topology_provider = Dict.get(options, :topology_provider, Application.get_env(Noizu.MnesiaVersioning, :topology_provider, :required_setting))
     if topology_provider == :required_setting do
       Logger.error "MnesiaVersioningInit - To use the Noizu.MnesiaVersioning library you must specify a topology_provider option in the noizu_mnesia_versioning config section. For more details @see mnesia_versioning/doc/config.md"
@@ -24,8 +26,11 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
       require Amnesia
       require Amnesia.Helper
       require Logger
+      alias Noizu.MnesiaVersioning.ChangeSet
+      alias unquote(versioning_table).ChangeSets
       use Mix.Task
-      use Noizu.MnesiaVersioning
+      use unquote(versioning_table)
+
       import unquote(__MODULE__)
 
       def main(args) do
@@ -33,7 +38,17 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
       end
 
       def change_sets() do
-        unquote(schema_provider).change_sets()
+        env = Mix.env
+        unquote(schema_provider).change_sets() |> Enum.filter(
+          fn(%ChangeSet{} = x) ->
+              case x.environments do
+                :all -> true
+                supported when is_list(supported) -> Enum.member?(supported, env)
+                supported when is_atom(supported) -> supported == env
+                invalid -> raise "Invalid Changeset Environments Field Provided: #{inspect invalid}\n#{inspect x}"
+              end
+          end
+        )
       end
 
       def run_command(:usage) do
@@ -42,7 +57,7 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
 
       def run_command({:migrate, :count, count}) do
         Amnesia.start #
-          Noizu.MnesiaVersioning.ChangeSets.wait()
+          ChangeSets.wait()
           migrate_count(change_sets(), count)
           spin_down(unquote(topology_provider).database())
         Amnesia.stop
@@ -50,7 +65,7 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
 
       def run_command({:migrate, :change, change, author}) do
         Amnesia.start #
-          Noizu.MnesiaVersioning.ChangeSets.wait()
+          ChangeSets.wait()
           h = change_sets()
             |> Enum.find(fn(x) -> {change, author} == {x.changeset, x.author} end)
           if h == :nil do
@@ -58,7 +73,7 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
           else
             # determine if entry has already been executed.
             record = Amnesia.transaction do
-              Noizu.MnesiaVersioning.ChangeSets.read({change, author})
+              ChangeSets.read({change, author})
             end # end Amnesia.transaction
 
             case record do
@@ -85,7 +100,7 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
         # rollback.
         rollback = change_sets() |> Enum.reverse
         Amnesia.start #
-          Noizu.MnesiaVersioning.ChangeSets.wait()
+          ChangeSets.wait()
           List.foldl(
             rollback,
             count,
@@ -94,7 +109,7 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
                 0 # short circuit
               else
                 record = Amnesia.transaction do
-                  Noizu.MnesiaVersioning.ChangeSets.read({h.changeset, h.author})
+                  ChangeSets.read({h.changeset, h.author})
                 end # end Amnesia.transaction
 
                 case record do
@@ -131,7 +146,7 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
 
       def run_command({:rollback, :change, change, author}) do
         Amnesia.start #
-          Noizu.MnesiaVersioning.ChangeSets.wait()
+          ChangeSets.wait()
           h = change_sets()
             |> Enum.find(fn(x) -> {change, author} == {x.changeset, x.author} end)
           if h == :nil do
@@ -172,7 +187,7 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
           # determine if entry has already been executed.
           key = {h.changeset, h.author}
           record = Amnesia.transaction do
-            Noizu.MnesiaVersioning.ChangeSets.read(key)
+            ChangeSets.read(key)
           end # end Amnesia.transaction
 
           case record do
@@ -248,10 +263,10 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
         # @TODO Refine & Investigate
         #---------------------------------------------------------------------------
         Amnesia.start
-          Noizu.MnesiaVersioning.ChangeSets.wait()
+          ChangeSets.wait()
           keys = get_available_change_sets()
           for change <- changesets do
-            Noizu.MnesiaVersioning.ChangeSets.wait()
+            ChangeSets.wait()
             run_change_set(keys, change)
           end # end for change
           spin_down(unquote(topology_provider).database())
@@ -260,9 +275,9 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
 
       defp get_available_change_sets() do
         # Grab Changesets
-        Noizu.MnesiaVersioning.ChangeSets.wait()
+        ChangeSets.wait()
         Amnesia.transaction do
-          Noizu.MnesiaVersioning.ChangeSets.keys()
+          ChangeSets.keys()
         end # end Amnesia.transaction
       end # end get_available_change_sets
 
@@ -280,8 +295,8 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
           Amnesia.start
           outcome = changeset.rollback.()
           Amnesia.Fragment.transaction do
-            Noizu.MnesiaVersioning.ChangeSets.from_change_set(changeset, outcome)
-              |> Noizu.MnesiaVersioning.ChangeSets.write
+            ChangeSets.from_change_set(changeset, outcome)
+              |> ChangeSets.write
           end # end Amnesia.transaction
         end # end if stage :skip
       end #end migrate_change()
@@ -299,8 +314,8 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
         else
           outcome = changeset.update.()
           Amnesia.transaction do
-            Noizu.MnesiaVersioning.ChangeSets.from_change_set(changeset, outcome)
-              |> Noizu.MnesiaVersioning.ChangeSets.write
+            ChangeSets.from_change_set(changeset, outcome)
+              |> ChangeSets.write
           end # end Amnesia.transaction
         end # end if stage :skip
       end #end migrate_change()
@@ -313,7 +328,7 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
             migrate_change(changeset, :apply, :new)
           _match -> # Record already exists. check to see if we may re-apply
             record = Amnesia.transaction do
-              Noizu.MnesiaVersioning.ChangeSets.read(key)
+              ChangeSets.read(key)
             end # end Amnesia.transaction
             proceed = rerun_change_set?(record)
             migrate_change(changeset, proceed, record.state)

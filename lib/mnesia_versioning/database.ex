@@ -4,7 +4,7 @@
 #-------------------------------------------------------------------------------
 
 use Amnesia
-defdatabase Noizu.MnesiaVersioning do
+defdatabase Noizu.MnesiaVersioning.Database do
   @moduledoc """
   The Changeset table is responsbile for tracking database changset status.
   Schema changes are packaged into changesets that include apply and rollback methods.
@@ -22,7 +22,7 @@ defdatabase Noizu.MnesiaVersioning do
     }
 
     def from_change_set(changeset, outcome) do
-      %Noizu.MnesiaVersioning.ChangeSets{
+      %Noizu.MnesiaVersioning.Database.ChangeSets{
         key: {changeset.changeset, changeset.author},
         changeset: changeset.changeset,
         author: changeset.author,

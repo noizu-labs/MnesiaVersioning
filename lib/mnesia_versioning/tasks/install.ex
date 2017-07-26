@@ -19,16 +19,19 @@ defmodule Noizu.MnesiaVersioning.Tasks.Install do
   require Logger
 
   defmacro __using__(options) do
+    versioning_table = Dict.get(options, :versioning_table, Noizu.MnesiaVersioning)
     topology_provider = Dict.get(options, :topology_provider, Application.get_env(Noizu.MnesiaVersioning, :topology_provider, :required_setting))
     if topology_provider == :required_setting do
       Logger.error "MnesiaVersioningInit - To use the Noizu.MnesiaVersioning library you must specify a topology_provider option in the noizu_mnesia_versioning config section. For more details @see mnesia_versioning/doc/config.md"
       raise "Noizu.MnesiaVersioning :topology_provider setting not configured. @see mnesia_versioning/doc/config.md for more details."
     end
+
+
     quote do
       require Amnesia
       require Amnesia.Helper
       require Logger
-      use Noizu.MnesiaVersioning
+      use unquote(versioning_table)
       use Mix.Task
       import unquote(__MODULE__)
 
@@ -61,10 +64,10 @@ defmodule Noizu.MnesiaVersioning.Tasks.Install do
           pid
         end
         Logger.info "MnesiaVersioningInit - Installing Versioning Table"
-        attempt_create = Noizu.MnesiaVersioning.create(disk: nodes)
+        attempt_create = unquote(versioning_table).create(disk: nodes)
         Logger.info "MnesiaVersioningInit - Schema Create: #{inspect attempt_create}"
-        Logger.info "MnesiaVersioningInit - Noizu.MnesiaVersioning.wait()"
-        attempt_wait = Noizu.MnesiaVersioning.wait()
+        Logger.info "MnesiaVersioningInit - unquote(versioning_table).wait()"
+        attempt_wait = unquote(versioning_table).wait()
         Logger.info "MnesiaVersioningInit - Schema Wait: #{inspect attempt_wait}"
         for (n <- npids) do
           send n, :initilization_complete

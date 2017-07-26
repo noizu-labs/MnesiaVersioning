@@ -9,7 +9,8 @@ defmodule Noizu.MnesiaVersioning.ChangeSet do
     changeset: String.t,
     author: String.t,
     note: String.t | :nil,
-    update: [],
+    environments: [] | :all,
+    update: [] | any,
     rollback: [] | :auto
   }
 
@@ -17,7 +18,8 @@ defmodule Noizu.MnesiaVersioning.ChangeSet do
     changeset: :nil,
     author: :nil,
     note: :nil,
-    update: [],
+    environments: :all,
+    update: nil,
     rollback: :auto,
   ]
 end

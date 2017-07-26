@@ -1,0 +1,4 @@
+# Exclude Elixir Build Output and Deps folders
+_build/
+deps/
+
