@@ -54,9 +54,10 @@ defmodule Noizu.MnesiaVersioning.Tasks.Install do
 
   defmacro __using__(options) do
     versioning_table = Keyword.get(options, :versioning_table, Application.get_env(Noizu.MnesiaVersioning, :versioning_table, Noizu.MnesiaVersioning.Database))
+    silent = Keyword.get(options, :silent, Application.get_env(Noizu.MnesiaVersioning, :silent, false))
     topology_provider = Keyword.get(options, :topology_provider, Application.get_env(Noizu.MnesiaVersioning, :topology_provider, :required_setting))
     if topology_provider == :required_setting do
-      IO.puts  "#{__MODULE__} - To use the Noizu.MnesiaVersioning library you must specify a topology_provider option in the noizu_mnesia_versioning config section. For more details @see mnesia_versioning/doc/config.md"
+      if (!silent), do: IO.puts  "#{__MODULE__} - To use the Noizu.MnesiaVersioning library you must specify a topology_provider option in the noizu_mnesia_versioning config section. For more details @see mnesia_versioning/doc/config.md"
       raise "Noizu.MnesiaVersioning :topology_provider setting not configured. @see mnesia_versioning/doc/config.md for more details."
     end
 
@@ -69,13 +70,16 @@ defmodule Noizu.MnesiaVersioning.Tasks.Install do
 
       import unquote(__MODULE__)
 
+      def log(message) do
+        if (!unquote(silent)), do: IO.puts(message)
+      end
 
       def run(["wait"]) do
         :ok
       end
 
       def run(["--skip-schema"]) do
-        IO.puts "#{__MODULE__} - Skipping Schema Creation . . . Proceeding to create versioning tables."
+        log "#{__MODULE__} - Skipping Schema Creation . . . Proceeding to create versioning tables."
         nodes = case unquote(topology_provider).mnesia_nodes() do
           {:ok, nil} -> [node()]
           {:ok, []} -> [node()]
@@ -92,19 +96,19 @@ defmodule Noizu.MnesiaVersioning.Tasks.Install do
           {:ok, nodes} -> nodes
         end
 
-        IO.puts  "#{__MODULE__} - Configuring Schema on specified nodes: #{inspect nodes}"
+        log  "#{__MODULE__} - Configuring Schema on specified nodes: #{inspect nodes}"
         case Amnesia.Schema.create(nodes) do
           :ok ->
-            IO.puts  "#{__MODULE__} - Schema created . . . Proceeding to create versioning tables."
+            log  "#{__MODULE__} - Schema created . . . Proceeding to create versioning tables."
             setup_versioning_tables(nodes)
           _ ->
-            IO.puts "#{__MODULE__} - Schema appears to already exit . . . Proceeding to create versioning tables (unexected outcomes may occur)."
+            log "#{__MODULE__} - Schema appears to already exit . . . Proceeding to create versioning tables (unexected outcomes may occur)."
             setup_versioning_tables(nodes)
         end # end case Schema.create
       end # end def run/1
 
       def run(_) do
-        IO.puts """
+        log """
         Usage:
         mix install
         mix install wait
@@ -121,33 +125,33 @@ defmodule Noizu.MnesiaVersioning.Tasks.Install do
           end
           pid
         end
-        IO.puts  "#{__MODULE__} - Installing Versioning Table"
+        log  "#{__MODULE__} - Installing Versioning Table"
         attempt_create = unquote(versioning_table).create(disk: nodes)
-        IO.puts  "#{__MODULE__} - Schema Create: #{inspect attempt_create}"
-        IO.puts  "#{__MODULE__} - unquote(versioning_table).wait()"
+        log  "#{__MODULE__} - Schema Create: #{inspect attempt_create}"
+        log  "#{__MODULE__} - #{unquote(versioning_table)}.wait()"
         attempt_wait = unquote(versioning_table).wait()
-        IO.puts  "#{__MODULE__} - Schema Wait: #{inspect attempt_wait}"
+        log  "#{__MODULE__} - Schema Wait: #{inspect attempt_wait}"
         for (n <- npids) do
           send n, :initilization_complete
           receive do
             :initilization_complete_confirmed -> :ok
           end # end recieve
         end # end for npids
-        IO.puts  "#{__MODULE__} -Initilization Complete."
+        log  "#{__MODULE__} -Initilization Complete."
         :ok
       end # end set_versioning_tables/1
 
       def wait_for_init(caller) do
-        IO.puts  "#{__MODULE__} #{inspect node()} - Wait For Init"
+        log  "#{__MODULE__} #{inspect node()} - Wait For Init"
         amnesia_start = Amnesia.start
-        IO.puts  "#{__MODULE__} #{inspect node()} - Amnesia Start: #{inspect amnesia_start}."
-        IO.puts  "Send wait_mode confirmation"
+        log  "#{__MODULE__} #{inspect node()} - Amnesia Start: #{inspect amnesia_start}."
+        log  "Send wait_mode confirmation"
         send caller, :wait_mode
 
-        IO.puts  "#{__MODULE__} #{inspect node()} - Wait for :initilization_complete response"
+        log  "#{__MODULE__} #{inspect node()} - Wait for :initilization_complete response"
         receive do
           :initilization_complete ->
-            IO.puts  "#{__MODULE__} #{inspect node()} - Initilization Complete, stopping Amnesia"
+            log  "#{__MODULE__} #{inspect node()} - Initilization Complete, stopping Amnesia"
             Amnesia.stop
             send caller, :initilization_complete_confirmed
             :ok

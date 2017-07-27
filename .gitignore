@@ -2,3 +2,5 @@
 _build/
 deps/
 
+# Exclude mnesia folder used by tests
+Mnesia.nonode@nohost/
