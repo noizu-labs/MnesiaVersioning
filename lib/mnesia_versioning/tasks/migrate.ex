@@ -17,12 +17,12 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
     ```
 
     *Usage*
-    || Command                                     || Notes                                                ||  Example                                                      ||
-    | `mix migrate`                                 | Apply any unapplied changesets for current Mix.env    | `mix migrate`                                                  |
-    | `mix migrate count %count%`                   | Apply specified number of unapplied changesets        | `mix migrate count 5`                                          |
-    | `mix migrate change %set% %author%`           | Apply a specific changeset by id and author.          | `mix migrate change "New User Tables" "Keith Brings"`          |
-    | `mix migrate rollback count %count%`          | Rollback specified number of changesets.              | `mix migrate rollback count 5`                                 |
-    | `mix migrate rollback change %set% %author%"` | Rollback specific changeset by name and author.       | `mix migrate rollback change "New User Tables" "Keith Brings"` |
+    || Command                                     || Notes                                                    ||  Example                                                      ||
+    | `mix migrate`                                 | Apply any unapplied changesets for current environment    | `mix migrate`                                                  |
+    | `mix migrate count %count%`                   | Apply specified number of unapplied changesets            | `mix migrate count 5`                                          |
+    | `mix migrate change %set% %author%`           | Apply a specific changeset by id and author.              | `mix migrate change "New User Tables" "Keith Brings"`          |
+    | `mix migrate rollback count %count%`          | Rollback specified number of changesets.                  | `mix migrate rollback count 5`                                 |
+    | `mix migrate rollback change %set% %author%"` | Rollback specific changeset by name and author.           | `mix migrate rollback change "New User Tables" "Keith Brings"` |
 
     *Configuration*
     The user must provide modules that implement the `Noizu.MnesiaVersioning.SchemaBehaviour` and `Noizu.MnesiaVersioning.TopologyBehaviour` behaviours.
@@ -80,7 +80,7 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
       end
 
       def change_sets() do
-        env = Mix.env
+        env = Application.get_env(Noizu.MnesiaVersioning, :environment, :prod)
         unquote(schema_provider).change_sets() |> Enum.filter(
           fn(%ChangeSet{} = x) ->
               case x.environments do

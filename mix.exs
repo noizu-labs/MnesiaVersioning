@@ -3,7 +3,7 @@ defmodule Noizu.MnesiaVersioning.Mixfile do
 
   def project do
     [app: :noizu_mnesia_versioning,
-     version: "0.1.3",
+     version: "0.1.4",
      elixir: "~> 1.4",
      package: package(),
      deps: deps(),
