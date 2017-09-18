@@ -257,6 +257,26 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
       #-----------------------------------------------------------------------------
       # Change Set Runner (upgrade)
       #-----------------------------------------------------------------------------
+
+      def run(["init"]) do
+        changesets = change_sets()
+        #---------------------------------------------------------------------------
+        # Changeset Runner Logic. -
+        # Need precondition support to avoid applying unecesary changesets when
+        # starting out with existing database.
+        # @TODO Refine & Investigate
+        #---------------------------------------------------------------------------
+        Amnesia.start
+          unquote(versioning_table).ChangeSets.wait()
+          keys = get_available_change_sets()
+          for change <- changesets do
+            unquote(versioning_table).ChangeSets.wait()
+            run_change_set(keys, change)
+          end # end for change
+          #spin_down(unquote(topology_provider).database())
+        #Amnesia.stop
+      end # end def run([])
+      
       def run([command|arguments]) do
         instruction = case command do
           "count" ->
