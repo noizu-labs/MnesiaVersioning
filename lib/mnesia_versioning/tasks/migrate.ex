@@ -130,6 +130,9 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
                   :failed -> migrate_change(h, :apply, record.state)
                   :error -> migrate_change(h, :apply, record.state)
                   :removed -> migrate_change(h, :apply, record.state)
+                  _unknown ->
+                    IO.puts "INVALID STATE FOUND: #{inspect record}"
+                    migrate_change(h, :skip, record.state)
                 end #end case record.state
             end # end case record
           end # end  if else h == :nil
@@ -158,7 +161,7 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
                   :nil ->
                     # No Entry, Apply and decrement count
                     rollback_change(h, :skip, :not_found)
-                    acc
+                    acc - 1
                   record ->
                     # skip unless pending
                     case record.state do
@@ -175,6 +178,11 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
                         rollback_change(h, :rollback, record.state)
                         acc - 1
                       :removed ->
+                        rollback_change(h, :skip, record.state)
+                        acc
+
+                      _unknown ->
+                        IO.puts "INVALID STATE FOUND: #{inspect record}"
                         rollback_change(h, :skip, record.state)
                         acc
                     end #end case record.state
@@ -211,6 +219,9 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
                   :failed -> rollback_change(h, :rollback, record.state)
                   :error -> rollback_change(h, :rollback, record.state)
                   :removed -> rollback_change(h, :skip, record.state)
+                  _unknown ->
+                    IO.puts "INVALID STATE FOUND: #{inspect record}"
+                     rollback_change(h, :skip, record.state)
                 end #end case record.state
             end # end case record
           end # end  if else h == :nil
@@ -296,6 +307,14 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
         run_command(instruction)
       end
 
+      def migrate() do
+        run([])
+      end
+
+      def rollback() do
+        run(["rollback", "count", "999999"]) #@TODO cleaner implenentation
+      end
+
       def run([]) do
         changesets = change_sets()
         #---------------------------------------------------------------------------
@@ -355,10 +374,26 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
           :ok
         else
           outcome = changeset.update.()
+
+          outcome = case outcome do
+            :success -> :success
+            :failed -> :failed
+            :removed -> :removed
+            :pending -> :pending
+            :error -> :error
+            _ ->
+              IO.puts "
+              ChangeSet return invalid outcome: #{inspect outcome}
+
+              "
+              {:invalid_outcome, :outcome}
+          end
+
           Amnesia.transaction do
           unquote(versioning_table).  ChangeSets.from_change_set(changeset, outcome)
               |> unquote(versioning_table).ChangeSets.write
           end # end Amnesia.transaction
+
         end # end if stage :skip
       end #end migrate_change()
 
@@ -383,6 +418,9 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
           :failed -> :skip
           :removed -> :apply
           :pending -> :apply
+          _unknown ->
+            IO.puts "INVALID STATE FOUND: #{inspect record}"
+            :skip
         end # end case record.state
       end # end rerun_change_set?
 
@@ -394,15 +432,54 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
         # after stopping Amnesia before completly loading a table.
         for database <- databases do
           tables = database.tables()
-          for table <- tables do
-            if(Amnesia.Table.exists?(table)) do
-              Amnesia.Table.wait([table])
-            end
-          end # end for tables
+            |> Enum.filter(&(Amnesia.Table.exists?(&1)))
+
+          not_available = database.tables()
+            |> Enum.filter(&(!Amnesia.Table.exists?(&1)))
+
+          case Amnesia.Table.wait(tables, 30_000) do
+            :ok -> :ok
+            err -> IO.puts """
+============ Spin Down ==============
+#{inspect err}
+=====================================
+            """
+          end
+
+          if not_available != [] do
+            IO.puts """
+============ Spin Down ==============
+Not Created: #{inspect not_available}
+=====================================
+            """
+          end
+
         end # end for databases
       end # end spin_down/1
 
       defp spin_down(database), do: spin_down([database])
+
+      defp spin_up(databases) when is_list(databases) do
+        # Wait for defined tables to load in order to avoid erroneous ets insert records to show
+        # after stopping Amnesia before completly loading a table.
+        for database <- databases do
+          tables = database.tables()
+            |> Enum.filter(&(Amnesia.Table.exists?(&1)))
+
+          case Amnesia.Table.wait(tables, 30_000) do
+            :ok -> :ok
+            err -> IO.puts """
+============ Spin Up ================
+#{inspect err}
+=====================================
+            """
+          end
+
+        end # end for databases
+      end # end spin_down/1
+
+      defp spin_up(database), do: spin_up([database])
+
 
     end # end quote do
   end  # end using
