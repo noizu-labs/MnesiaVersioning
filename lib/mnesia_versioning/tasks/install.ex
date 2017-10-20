@@ -53,9 +53,9 @@ defmodule Noizu.MnesiaVersioning.Tasks.Install do
   """
 
   defmacro __using__(options) do
-    versioning_table = Keyword.get(options, :versioning_table, Application.get_env(Noizu.MnesiaVersioning, :versioning_table, Noizu.MnesiaVersioning.Database))
-    silent = Keyword.get(options, :silent, Application.get_env(Noizu.MnesiaVersioning, :silent, false))
-    topology_provider = Keyword.get(options, :topology_provider, Application.get_env(Noizu.MnesiaVersioning, :topology_provider, :required_setting))
+    versioning_table = Keyword.get(options, :versioning_table, Application.get_env(:noizu_mnesia_versioning, :versioning_table, Noizu.MnesiaVersioning.Database))
+    silent = Keyword.get(options, :silent, Application.get_env(:noizu_mnesia_versioning, :silent, false))
+    topology_provider = Keyword.get(options, :topology_provider, Application.get_env(:noizu_mnesia_versioning, :topology_provider, :required_setting))
     if topology_provider == :required_setting do
       if (!silent), do: IO.puts  "#{__MODULE__} - To use the Noizu.MnesiaVersioning library you must specify a topology_provider option in the noizu_mnesia_versioning config section. For more details @see mnesia_versioning/doc/config.md"
       raise "Noizu.MnesiaVersioning :topology_provider setting not configured. @see mnesia_versioning/doc/config.md for more details."
