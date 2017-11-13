@@ -32,10 +32,51 @@ defmodule Noizu.MnesiaVersioning.SchemaBehaviour do
   defmodule MyApp.SchemaVersioning do
     @behaviour Noizu.MnesiaVersioning.SchemaBehaviour
     def change_sets() do
-      # where the following each return an array of change sets. 
+      # where the following each return an array of change sets.
       MyApp.SchemaVersioning.UserFeature.change_sets() ++ MyApp.SchemaVersioning.PokerGameFeature.change_sets()
     end
   end
   """
   @callback change_sets() :: [Noizu.MnesiaVersioning.ChangeSet]
+
+  #-----------------------------------------------------------------------------
+  # Using Implementation
+  #-----------------------------------------------------------------------------
+  defmacro __using__(options) do
+    default_timeout = options[:default_timeout] || 60_000
+    default_cluster = options[:default_cluster] || :auto
+
+    quote do
+      import unquote(__MODULE__)
+      @behaviour Noizu.MnesiaVersioning.SchemaBehaviour
+
+      @default_timeout(unquote(default_timeout))
+      @default_cluster(unquote(default_cluster))
+      use Amnesia
+
+      def create_table(tab, dist \\ :auto) do
+        dist = case dist do
+          :auto ->
+            case @default_cluster do
+              :auto -> [disk: [node()]]
+              v -> v
+            end
+          v -> v
+        end
+
+        if !Amnesia.Table.exists?(tab) do
+          :ok = tab.create(dist)
+        end
+      end
+
+      def destroy_table(tab, timeout \\ @default_timeout) do
+        if Amnesia.Table.exists?(tab) do
+          :ok = Amnesia.Table.wait([tab], timeout)
+          :ok = Amnesia.Table.destroy(tab)
+        end
+      end
+
+    end # end __using__
+  end # end macro
+
 end
