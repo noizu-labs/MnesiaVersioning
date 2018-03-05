@@ -1,3 +1,8 @@
+#-------------------------------------------------------------------------------
+# Author: Keith Brings
+# Copyright (C) 2018 Noizu Labs, Inc. All rights reserved.
+#-------------------------------------------------------------------------------
+
 # Mnesia
 Code.require_file("test/fixtures/mnesia/test_database.exs")
 Code.require_file("test/fixtures/mnesia/second_test_database.exs")

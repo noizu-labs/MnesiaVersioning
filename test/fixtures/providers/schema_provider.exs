@@ -1,3 +1,8 @@
+#-------------------------------------------------------------------------------
+# Author: Keith Brings
+# Copyright (C) 2018 Noizu Labs, Inc. All rights reserved.
+#-------------------------------------------------------------------------------
+
 defmodule Noizu.MnesiaVersioning.Test.SchemaProvider do
   alias Noizu.MnesiaVersioning.ChangeSet
   use Amnesia

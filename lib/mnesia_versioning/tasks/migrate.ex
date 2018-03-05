@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------
-# Author: Keith Brings <keith.brings@noizu.com>
-# Copyright (C) 2017 Noizu Labs, Inc. All rights reserved.
+# Author: Keith Brings
+# Copyright (C) 2018 Noizu Labs, Inc. All rights reserved.
 #-------------------------------------------------------------------------------
 
 defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
@@ -287,7 +287,7 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
           #spin_down(unquote(topology_provider).database())
         #Amnesia.stop
       end # end def run([])
-      
+
       def run([command|arguments]) do
         instruction = case command do
           "count" ->
