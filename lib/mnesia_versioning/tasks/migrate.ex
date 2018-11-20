@@ -156,12 +156,11 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
                 record = Amnesia.transaction do
                   unquote(versioning_table).ChangeSets.read({h.changeset, h.author})
                 end # end Amnesia.transaction
-
                 case record do
                   :nil ->
                     # No Entry, Apply and decrement count
                     rollback_change(h, :skip, :not_found)
-                    acc - 1
+                    acc
                   record ->
                     # skip unless pending
                     case record.state do
@@ -308,6 +307,7 @@ defmodule Noizu.MnesiaVersioning.Tasks.Migrate do
             [rollback_command|rollback_arguments] = arguments
             case rollback_command do
               "count" ->
+
                 case rollback_arguments do
                   [count] ->
                     {count, _} = Integer.parse(count)

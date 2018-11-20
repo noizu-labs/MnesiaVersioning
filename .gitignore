@@ -1,6 +1,8 @@
 # Exclude Elixir Build Output and Deps folders
-_build/
-deps/
+/_build
+/deps
 
 # Exclude mnesia folder used by tests
 Mnesia.nonode@nohost/
+/.idea
+noizu_mnesia_versioning.iml

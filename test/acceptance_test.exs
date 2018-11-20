@@ -83,11 +83,14 @@ defmodule AcceptanceTest do
     assert existing.value == "Hello World"
   end
 
+  @tag :temp
   test "MigrateRollbackByCount" do
     Noizu.MnesiaVersioning.Test.Install.run([])
     Noizu.MnesiaVersioning.Test.Migrate.run(["count", "1"])
     Amnesia.start
     assert Amnesia.Table.exists?(Noizu.MnesiaVersioning.SecondTestDatabase.SecondTestTable) == true
+    assert Amnesia.Table.exists?(Noizu.MnesiaVersioning.TestDatabase.TestRecoveryTable) == false
+
     Noizu.MnesiaVersioning.Test.Migrate.run(["rollback", "count", "1"])
     Amnesia.start
     assert Amnesia.Table.exists?(Noizu.MnesiaVersioning.SecondTestDatabase.SecondTestTable) == false
