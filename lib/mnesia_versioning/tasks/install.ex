@@ -64,20 +64,22 @@ defmodule Noizu.MnesiaVersioning.Tasks.Install do
     quote do
       require Amnesia
       require Amnesia.Helper
-
+      @file unquote(__ENV__.file) <> ":#{unquote(__ENV__.line)}" <> "(via #{__ENV__.file}:#{__ENV__.line})"
       use unquote(versioning_table)
       use Mix.Task
 
       import unquote(__MODULE__)
-
+      @file unquote(__ENV__.file) <> ":#{unquote(__ENV__.line)}" <> "(via #{__ENV__.file}:#{__ENV__.line})"
       def log(message) do
         if (!unquote(silent)), do: IO.puts(message)
       end
 
+      @file unquote(__ENV__.file) <> ":#{unquote(__ENV__.line)}" <> "(via #{__ENV__.file}:#{__ENV__.line})"
       def run(["wait"]) do
         :ok
       end
 
+      @file unquote(__ENV__.file) <> ":#{unquote(__ENV__.line)}" <> "(via #{__ENV__.file}:#{__ENV__.line})"
       def run(["--skip-schema"]) do
         log "#{__MODULE__} - Skipping Schema Creation . . . Proceeding to create versioning tables."
         nodes = case unquote(topology_provider).mnesia_nodes() do
@@ -89,6 +91,7 @@ defmodule Noizu.MnesiaVersioning.Tasks.Install do
         setup_versioning_tables(nodes)
       end
 
+      @file unquote(__ENV__.file) <> ":#{unquote(__ENV__.line)}" <> "(via #{__ENV__.file}:#{__ENV__.line})"
       def run([]) do
         nodes = case unquote(topology_provider).mnesia_nodes() do
           {:ok, nil} -> [node()]
@@ -107,6 +110,7 @@ defmodule Noizu.MnesiaVersioning.Tasks.Install do
         end # end case Schema.create
       end # end def run/1
 
+      @file unquote(__ENV__.file) <> ":#{unquote(__ENV__.line)}" <> "(via #{__ENV__.file}:#{__ENV__.line})"
       def run(_) do
         log """
         Usage:
@@ -117,6 +121,7 @@ defmodule Noizu.MnesiaVersioning.Tasks.Install do
         :error
       end
 
+      @file unquote(__ENV__.file) <> ":#{unquote(__ENV__.line)}" <> "(via #{__ENV__.file}:#{__ENV__.line})"
       def setup_versioning_tables(nodes) do
         npids = for (n <- nodes) do
           pid = Node.spawn(n, __MODULE__, :wait_for_init, [self()])
@@ -141,6 +146,7 @@ defmodule Noizu.MnesiaVersioning.Tasks.Install do
         :ok
       end # end set_versioning_tables/1
 
+      @file unquote(__ENV__.file) <> ":#{unquote(__ENV__.line)}" <> "(via #{__ENV__.file}:#{__ENV__.line})"
       def wait_for_init(caller) do
         log  "#{__MODULE__} #{inspect node()} - Wait For Init"
         amnesia_start = Amnesia.start
@@ -157,6 +163,15 @@ defmodule Noizu.MnesiaVersioning.Tasks.Install do
             :ok
         end # end recieve
       end # end wait_for_init/1
+
+      @file unquote(__ENV__.file) <> ":#{unquote(__ENV__.line)}" <> "(via #{__ENV__.file}:#{__ENV__.line})"
+      defoverridable [
+        log: 1,
+        run: 1,
+        setup_versioning_tables: 1,
+        wait_for_init: 1,
+      ]
+
     end # end qoute do
   end # end using
 end # end Mix.Tasks.MnesaVersioningInit
