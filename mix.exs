@@ -8,14 +8,18 @@ defmodule Noizu.MnesiaVersioning.Mixfile do
 
   def project do
     [app: :noizu_mnesia_versioning,
-     version: "0.1.9",
-     elixir: "~> 1.4",
-     package: package(),
+     version: "0.1.10",
+     elixir: "~> 1.13",
+      elixirc_paths: elixirc_paths(Mix.env),
+      package: package(),
      deps: deps(),
      description: "Schema Management Framework for Elixir/Amnesia",
      docs: docs()
    ]
   end
+
+  defp elixirc_paths(:test), do: ["lib", "test/fixtures"]
+  defp elixirc_paths(_),     do: ["lib"]
 
   defp package do
     [
@@ -26,12 +30,14 @@ defmodule Noizu.MnesiaVersioning.Mixfile do
   end
 
   def application do
-    [ applications: [:logger] ]
+    [ applications: [:logger, :mnesia],
+      extra_applications: [:amnesia]
+    ]
   end
 
   defp deps do
     [
-      {:ex_doc, "~> 0.16.2", only: [:dev, :test], optional: true, runtime: false}, # Documentation Provider
+      {:ex_doc, "~> 0.28.3", only: [:dev, :test], optional: true, runtime: false}, # Documentation Provider
       {:markdown, github: "devinus/markdown", only: [:dev], optional: true}, # Markdown processor for ex_doc
       {:amnesia, git: "https://github.com/noizu/amnesia.git", ref: "9266002"}, # Mnesia Wrapper
     ]

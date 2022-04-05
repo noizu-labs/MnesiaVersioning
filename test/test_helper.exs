@@ -4,16 +4,16 @@
 #-------------------------------------------------------------------------------
 
 # Mnesia
-Code.require_file("test/fixtures/mnesia/test_database.exs")
-Code.require_file("test/fixtures/mnesia/second_test_database.exs")
+#Code.require_file("test/fixtures/mnesia/test_database.exs")
+#Code.require_file("test/fixtures/mnesia/second_test_database.exs")
 
 # Providers
-Code.require_file("test/fixtures/providers/schema_provider.exs")
-Code.require_file("test/fixtures/providers/topology_provider.exs")
+#Code.require_file("test/fixtures/providers/schema_provider.exs")
+#Code.require_file("test/fixtures/providers/topology_provider.exs")
 
 # Tasks
-Code.require_file("test/fixtures/tasks/install.exs")
-Code.require_file("test/fixtures/tasks/migrate.exs")
+#Code.require_file("test/fixtures/tasks/install.exs")
+#Code.require_file("test/fixtures/tasks/migrate.exs")
 
 # http://elixir-lang.org/docs/stable/ex_unit/ExUnit.html#start/1
 ExUnit.start(capture_log: true)
